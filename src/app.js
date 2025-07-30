@@ -12,6 +12,9 @@ app.use(
     })
 );
 
+app.use(require('./routes/AdminRoute'));
+app.use(require('./routes/UserRoute'));
+
 app.get('/', (req, res) => {
     res.sendStatus(200);
 });

@@ -1,4 +1,8 @@
 const express = require('express');
+const { ResponseStatus } = require('./constants');
+const Util = require('./util');
+const userAuth = require('../middleware/userAuth');
+const adminAuth = require('../middleware/adminAuth');
 
 class API {
     static configRoute(root) {
@@ -56,8 +60,21 @@ const Builder = class {
         executer,
         router,
         middlewaresList = [],
+        useAdminAuth = false,
         useUserAuth = false
     ) {
+        this.useAdminAuth = () => {
+            return new Builder(
+                methodType,
+                root,
+                subPath,
+                executer,
+                router,
+                middlewaresList,
+                true,
+                false
+            );
+        };
         this.userUserAuth = () => {
             return new Builder(
                 methodType,
@@ -66,6 +83,7 @@ const Builder = class {
                 executer,
                 router,
                 middlewaresList,
+                false,
                 true
             );
         };
@@ -74,14 +92,16 @@ const Builder = class {
             let controller = async (req, res) => {
                 try {
                     let response = await executer(req, res);
-                    res.status(200).send(response);
-                } catch (error) {
-                    console.log(error);
-                    //error will manage later
+                    res.status(ResponseStatus.Success).send(response);
+                } catch (e) {
+                    res.status(ResponseStatus.BadRequest).send(
+                        Util.getErrorMessage(e)
+                    );
                 }
             };
 
             let middlewares = [...middlewaresList];
+            if (useAdminAuth) middlewares.push(adminAuth);
             if (useUserAuth) middlewares.push(userAuth);
 
             router[methodType](root + subPath, ...middlewares, controller);
@@ -89,3 +109,5 @@ const Builder = class {
         };
     }
 };
+
+module.exports = API;

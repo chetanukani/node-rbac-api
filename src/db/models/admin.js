@@ -1,21 +1,18 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require("mongoose");
+const validator = require("validator");
 const {
     ValidationMsgs,
     TableNames,
     TableFields,
-} = require('../../utils/constants');
-const ValidationError = require('../../utils/ValidationError');
-const bcrypt = require('bcryptjs'); // To compare value with it's Hash
-const jwt = require('jsonwebtoken'); // To generate Hash
+    UserTypes,
+} = require("../../utils/constants");
+const ValidationError = require("../../utils/ValidationError");
+const bcrypt = require("bcryptjs"); // To compare value with it's Hash
+const jwt = require("jsonwebtoken"); // To generate Hash
 
-const userSchema = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
     {
-        [TableFields.firstName]: {
-            type: String,
-            trim: true,
-        },
-        [TableFields.lastName]: {
+        [TableFields.name_]: {
             type: String,
             trim: true,
         },
@@ -45,21 +42,13 @@ const userSchema = new mongoose.Schema(
                 },
             },
         ],
-        [TableFields.active]: {
-            type: Boolean,
-            default: true,
-        },
-        [TableFields.roleRef]: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: TableNames.Role,
-        },
         [TableFields._createdAt]: {
             type: Date,
-            default: Date.now,
+            default: Date.now
         },
         [TableFields._updatedAt]: {
             type: Date,
-            default: Date.now,
+            default: Date.now
         },
     },
     {
@@ -74,22 +63,38 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.methods.isValidAuth = async function (password) {
+adminSchema.methods.isValidAuth = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.createAuthToken = function () {
+adminSchema.methods.isValidPassword = function (password) {
+    const regEx = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    return regEx.test(password);
+};
+
+adminSchema.methods.createAuthToken = function () {
     const token = jwt.sign(
         {
             [TableFields.ID]: this[TableFields.ID].toString(),
         },
-        process.env.JWT_USER_PK || 'top-secret'
+        process.env.JWT_ADMIN_PK || 'top-secret'
+    );
+    return token;
+};
+
+adminSchema.methods.resetPasswordToken = function () {
+    const token = jwt.sign(
+        {
+            [TableFields.ID]: this[TableFields.ID].toString(),
+        },
+        process.env.JWT_ADMIN_PK,
+        { expiresIn: "1d" }
     );
     return token;
 };
 
 //Hash the plaintext password before saving
-userSchema.pre('save', async function (next) {
+adminSchema.pre("save", async function (next) {
     if (this.isModified(TableFields.password)) {
         this[TableFields.password] = await bcrypt.hash(
             this[TableFields.password],
@@ -99,5 +104,6 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-const User = mongoose.model(TableNames.User, userSchema);
-module.exports = User;
+
+const Admin = mongoose.model(TableNames.Admin, adminSchema);
+module.exports = Admin;
