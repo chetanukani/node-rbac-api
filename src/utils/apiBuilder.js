@@ -75,7 +75,7 @@ const Builder = class {
                 false
             );
         };
-        this.userUserAuth = () => {
+        this.useUserAuth = () => {
             return new Builder(
                 methodType,
                 root,

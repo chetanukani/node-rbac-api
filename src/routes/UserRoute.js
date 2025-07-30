@@ -17,6 +17,15 @@ const router = API.configRoute('/user')
     .asGET(UserController.getUserDetails)
     .useAdminAuth()
     .build()
+
+    .addPath('/login')
+    .asPOST(UserController.login)
+    .build()
+
+    .addPath('/logout')
+    .asPOST(UserController.logout)
+    .useUserAuth()
+    .build()
     
     .getRouter();
 

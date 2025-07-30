@@ -13,6 +13,7 @@ const ValidationMsgs = (function () {
     ValidationMsgs.NameEmpty = 'NameEmpty';
     ValidationMsgs.ParamerError = 'ParamerError';
     ValidationMsgs.RecordNotFound = 'RecordNotFound';
+    ValidationMsgs.SufficientPermission = 'SufficientPermission Needed';
     return ValidationMsgs;
 })();
 

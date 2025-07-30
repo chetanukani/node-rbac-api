@@ -24,7 +24,7 @@ class UserService {
                 ...this,
             };
             delete projectionFields.populate;
-            
+
             return await User.findById(
                 MongoUtil.toObjectId(recordId),
                 projectionFields
@@ -138,6 +138,32 @@ class UserService {
             ]).then(([total, records]) => ({ total, records }));
         });
     };
+
+    static saveAuthToken = async (userId, token) => {
+        await User.updateOne(
+            {
+                [TableFields.ID]: userId,
+            },
+            {
+                $push: {
+                    [TableFields.tokens]: { [TableFields.token]: token },
+                },
+            }
+        );
+    };
+
+    static removeAuth = async (userId, authToken) => {
+        await User.updateOne(
+            {
+                [TableFields.ID]: userId,
+            },
+            {
+                $pull: {
+                    [TableFields.tokens]: { [TableFields.token]: authToken },
+                },
+            }
+        );
+    };
 }
 
 const ProjectionBuilder = class {
@@ -147,6 +173,11 @@ const ProjectionBuilder = class {
         };
         this.withId = () => {
             projection[TableFields.ID] = 1;
+            return this;
+        };
+
+        this.withPassword = () => {
+            projection[TableFields.password] = 1;
             return this;
         };
 
