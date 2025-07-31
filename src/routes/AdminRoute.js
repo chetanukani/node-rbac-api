@@ -23,6 +23,11 @@ const router = API.configRoute('/admin')
     .useAdminAuth()
     .build()
 
+    .addPath(`/role/edit/:${TableFields.ID}`)
+    .asUPDATE(RoleController.editRole)
+    .useAdminAuth()
+    .build()
+
     .addPath('/role/list')
     .asGET(RoleController.listRoles)
     .useAdminAuth()
@@ -32,7 +37,6 @@ const router = API.configRoute('/admin')
     .asGET(RoleController.getRoleDetails)
     .useAdminAuth()
     .build()
-
 
     .getRouter();
 

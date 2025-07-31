@@ -3,6 +3,7 @@ const { ResponseStatus } = require('./constants');
 const Util = require('./util');
 const userAuth = require('../middleware/userAuth');
 const adminAuth = require('../middleware/adminAuth');
+const permission = require('../middleware/permission');
 
 class API {
     static configRoute(root) {
@@ -61,7 +62,8 @@ const Builder = class {
         router,
         middlewaresList = [],
         useAdminAuth = false,
-        useUserAuth = false
+        useUserAuth = false,
+        usePermissionAuth = false
     ) {
         this.useAdminAuth = () => {
             return new Builder(
@@ -72,6 +74,7 @@ const Builder = class {
                 router,
                 middlewaresList,
                 true,
+                false,
                 false
             );
         };
@@ -83,6 +86,21 @@ const Builder = class {
                 executer,
                 router,
                 middlewaresList,
+                false,
+                true,
+                usePermissionAuth
+            );
+        };
+
+        this.usePermissionAuth = () => {
+            return new Builder(
+                methodType,
+                root,
+                subPath,
+                executer,
+                router,
+                middlewaresList,
+                false,
                 false,
                 true
             );
@@ -103,6 +121,7 @@ const Builder = class {
             let middlewares = [...middlewaresList];
             if (useAdminAuth) middlewares.push(adminAuth);
             if (useUserAuth) middlewares.push(userAuth);
+            if (usePermissionAuth) middlewares.push(permission);
 
             router[methodType](root + subPath, ...middlewares, controller);
             return new PathBuilder(root, router);

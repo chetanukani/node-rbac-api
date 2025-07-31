@@ -22,7 +22,10 @@ class RoleService {
 
     static getRoleById = (recordId, lean = false) => {
         return new ProjectionBuilder(async function () {
-            return await Role.findById(MongoUtil.toObjectId(recordId), this).lean(lean);
+            return await Role.findById(
+                MongoUtil.toObjectId(recordId),
+                this
+            ).lean(lean);
         });
     };
 
@@ -42,6 +45,13 @@ class RoleService {
                     .skip(parseInt(skip))
                     .sort({ [sortKey]: parseInt(sortOrder) }),
             ]).then(([total, records]) => ({ total, records }));
+        });
+    };
+
+    static editRole = async (recordId, updatedDetails = {}) => {
+        await Role.findByIdAndUpdate(MongoUtil.toObjectId(recordId), {
+            [TableFields.name_]: updatedDetails[TableFields.name_],
+            [TableFields.permissions]: updatedDetails[TableFields.permissions],
         });
     };
 }

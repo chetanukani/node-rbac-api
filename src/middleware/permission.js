@@ -10,7 +10,7 @@ const permission = async (req, res, next) => {
         let hasPermission = false;
         switch (req.method) {
             case 'GET':
-                hasPermission = req.user.roleAndPermission.permissions.some(
+                hasPermission = req.user.roleRef.permissions.some(
                     (permission) =>
                         permission.module == req.headers.module &&
                         (permission.permissions.includes(Permissions.All) ||
@@ -18,7 +18,7 @@ const permission = async (req, res, next) => {
                 );
                 break;
             case 'POST':
-                hasPermission = req.user.roleAndPermission.permissions.some(
+                hasPermission = req.user.roleRef.permissions.some(
                     (permission) =>
                         permission.module == req.headers.module &&
                         (permission.permissions.includes(Permissions.All) ||
@@ -26,7 +26,7 @@ const permission = async (req, res, next) => {
                 );
                 break;
             case 'PATCH':
-                hasPermission = req.user.roleAndPermission.permissions.some(
+                hasPermission = req.user.roleRef.permissions.some(
                     (permission) =>
                         permission.module == req.headers.module &&
                         (permission.permissions.includes(Permissions.All) ||
@@ -34,7 +34,7 @@ const permission = async (req, res, next) => {
                 );
                 break;
             case 'DELETE':
-                hasPermission = req.user.roleAndPermission.permissions.some(
+                hasPermission = req.user.roleRef.permissions.some(
                     (permission) =>
                         permission.module == req.headers.module &&
                         (permission.permissions.includes(Permissions.All) ||

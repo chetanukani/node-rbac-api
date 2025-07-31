@@ -31,6 +31,39 @@ exports.logout = async (req) => {
     await UserService.removeAuth(req.user[TableFields.ID], headerToken);
 };
 
+exports.signUp = async (req) => {
+    let { firstName, lastName, roleRef, email, password } = req.body;
+
+    if (!firstName || !lastName || !roleRef || !email || !password) {
+        throw new ValidationError(ValidationMsgs.ParamerError);
+    }
+
+    email = (email + '').trim().toLowerCase();
+    const roleDetails = await RoleService.getRoleById(roleRef)
+        .withId()
+        .execute();
+    if (!roleDetails) {
+        throw new ValidationError(ValidationMsgs.RecordNotFound);
+    }
+    const obj = {
+        [TableFields.firstName]: firstName,
+        [TableFields.lastName]: lastName,
+        [TableFields.roleRef]: roleRef,
+        [TableFields.password]: password,
+    };
+    await UserService.addUser(email, obj);
+
+    let user = await UserService.findByEmail(email)
+        .withPassword()
+        .withBasicInfo()
+        .execute();
+
+    const token = user.createAuthToken(InterfaceTypes.User.UserWeb);
+    await UserService.saveAuthToken(user[TableFields.ID], token);
+
+    return { user, token };
+};
+
 //This admin will be added by directly through postman
 exports.addUser = async (req) => {
     const { firstName, lastName, roleRef, email } = req.body;
@@ -51,8 +84,9 @@ exports.addUser = async (req) => {
         [TableFields.roleRef]: roleRef,
     };
     const details = await UserService.addUser(email, obj);
-    console.log(details)
+    console.log(details);
     //TODO: Will sent an email with password
+    //For testing perpose I am sending password with return
 };
 
 exports.listUser = async (req) => {
@@ -72,4 +106,25 @@ exports.getUserDetails = async (req) => {
         throw new ValidationError(ValidationMsgs.RecordNotFound);
     }
     return userDetails;
+};
+
+//Permission based access
+exports.addCategory = async (req) => {
+    //And user have Add permision in category module then they can access this API
+    return { response: 'User have Add permission in Category module' };
+};
+
+exports.getCategoryDetails = async (req) => {
+    //And user have get permision in category module then they can access this API
+    return { response: 'User have get permission in Category module' };
+};
+
+exports.updateCategory = async (req) => {
+    //And user have update permision in category module then they can access this API
+    return { response: 'User have update permission in Category module' };
+};
+
+exports.deleteCategory = async (req) => {
+    //And user have delete permision in category module then they can access this API
+    return { response: 'User have delete permission in Category module' };
 };

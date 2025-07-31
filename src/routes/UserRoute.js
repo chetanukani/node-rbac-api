@@ -22,11 +22,40 @@ const router = API.configRoute('/user')
     .asPOST(UserController.login)
     .build()
 
+    .addPath('/signup')
+    .asPOST(UserController.signUp)
+    .build()
+
     .addPath('/logout')
     .asPOST(UserController.logout)
     .useUserAuth()
     .build()
-    
+
+    //Role and Permission based routes for demonstrate
+    .addPath('/category/add')
+    .asPOST(UserController.addCategory)
+    .usePermissionAuth()
+    .useUserAuth()
+    .build()
+
+    .addPath('/category/details')
+    .asGET(UserController.getCategoryDetails)
+    .usePermissionAuth()
+    .useUserAuth()
+    .build()
+
+    .addPath('/category/update')
+    .asUPDATE(UserController.updateCategory)
+    .usePermissionAuth()
+    .useUserAuth()
+    .build()
+
+    .addPath('/category/delete')
+    .asDELETE(UserController.deleteCategory)
+    .usePermissionAuth()
+    .useUserAuth()
+    .build()
+
     .getRouter();
 
 module.exports = router;

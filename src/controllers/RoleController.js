@@ -31,5 +31,25 @@ exports.getRoleDetails = async (req) => {
 };
 
 exports.listRoles = async (req) => {
-    return await RoleService.listRoles(req.query).withBasicInfo().execute()
+    return await RoleService.listRoles(req.query).withBasicInfo().execute();
+};
+
+exports.editRole = async (req) => {
+    const roleId = req.params[TableFields.ID];
+    const { name, permissions = [] } = req.body;
+    if (!name || !permissions.length) {
+        throw new ValidationError(ValidationMsgs.ParamerError);
+    }
+    const roleDetails = await RoleService.getRoleById(roleId)
+        .withId()
+        .execute();
+    if (!roleDetails) {
+        throw new ValidationError(ValidationMsgs.RecordNotFound);
+    }
+
+    const obj = {
+        name,
+        permissions,
+    };
+    await RoleService.editRole(roleId, obj);
 };

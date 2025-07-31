@@ -47,13 +47,18 @@ class UserService {
 
     static getUserByIdAndToken = (userId, token) => {
         return new ProjectionBuilder(async function () {
+            let populateFields = this.populate;
+            let projectionFields = {
+                ...this,
+            };
+            delete projectionFields.populate;
             return await User.findOne(
                 {
                     [TableFields.ID]: userId,
                     [TableFields.tokens + '.' + TableFields.token]: token,
                 },
-                this
-            );
+                projectionFields
+            ).populate(populateFields);
         });
     };
 
@@ -62,7 +67,8 @@ class UserService {
             throw new ValidationError(ValidationMsgs.DuplicateEmail);
         }
 
-        const newPassword = Util.generateRandomPassword(8, true);
+        // const newPassword = Util.generateRandomPassword(8, true);
+        const newPassword = userObj?.[TableFields.password] || 'User@123'; //static for testing
         const user = new User({
             [TableFields.email]: email,
             ...userObj,
