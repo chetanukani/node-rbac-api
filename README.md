@@ -14,7 +14,7 @@
 1. Clone Repo
 
 ```
-$ git clone url
+$ git clone https://github.com/chetanukani/node-rbac-api.git
 $ cd node-rbac-api
 ```
 
