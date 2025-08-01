@@ -1,6 +1,6 @@
 <div align="center">
     <h1>   
-    Role Based Access Controler APIs
+    Role Based Access Control APIs
     </h1>
 </div>
 
