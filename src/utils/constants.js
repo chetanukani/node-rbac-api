@@ -1,3 +1,4 @@
+//I Just take this message as key but we can change the message string as per out needs
 const ValidationMsgs = (function () {
     function ValidationMsgs(item) {}
     ValidationMsgs.AuthFail = 'Please authenticate!';
@@ -14,6 +15,7 @@ const ValidationMsgs = (function () {
     ValidationMsgs.ParamerError = 'ParamerError';
     ValidationMsgs.RecordNotFound = 'RecordNotFound';
     ValidationMsgs.SufficientPermission = 'SufficientPermission Needed';
+    ValidationMsgs.RoleAssignedCannotDelete = 'RoleAssignedCannotDelete';
     return ValidationMsgs;
 })();
 
@@ -53,6 +55,9 @@ const TableFields = (function () {
     TableFields.module = 'module';
     TableFields.permissions = 'permissions';
     TableFields.roleRef = 'roleRef';
+    TableFields.user = 'user';
+    TableFields.createdAt = 'createdAt';
+    TableFields.updatedAt = 'updatedAt';
     return TableFields;
 })();
 
@@ -93,5 +98,5 @@ module.exports = {
     TableFields,
     InterfaceTypes,
     PermissionModules,
-    Permissions
+    Permissions,
 };

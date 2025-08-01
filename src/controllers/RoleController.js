@@ -1,4 +1,5 @@
 const RoleService = require('../db/services/RoleService');
+const UserService = require('../db/services/UserService');
 const ValidationError = require('../utils/ValidationError');
 const {
     ValidationMsgs,
@@ -31,7 +32,10 @@ exports.getRoleDetails = async (req) => {
 };
 
 exports.listRoles = async (req) => {
-    return await RoleService.listRoles(req.query).withBasicInfo().execute();
+    return await RoleService.listRoles(req.query)
+        .withBasicInfo()
+        .withTimestamp()
+        .execute();
 };
 
 exports.editRole = async (req) => {
@@ -52,4 +56,18 @@ exports.editRole = async (req) => {
         permissions,
     };
     await RoleService.editRole(roleId, obj);
+};
+
+exports.updateActivationStatus = async (req) => {
+    const roleRef = req.params[TableFields.ID];
+    const active = Util.parseBoolean(req.body.active);
+    await RoleService.statusChange(roleRef, active);
+};
+
+exports.deleteRole = async (req) => {
+    const roleRef = req.params[TableFields.ID];
+    if (await UserService.checkRoleAssigned(roleRef)) {
+        throw new ValidationError(ValidationMsgs.RoleAssignedCannotDelete);
+    }
+    await RoleService.deleteRole(roleRef);
 };

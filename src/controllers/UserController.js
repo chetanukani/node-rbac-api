@@ -108,6 +108,22 @@ exports.getUserDetails = async (req) => {
     return userDetails;
 };
 
+exports.updateUserLastname = async (req) => {
+    const { records = [] } = req.body;
+    await UserService.updateManyUsersDetails(records);
+};
+
+//Check Role
+exports.checkRole = async (req) => {
+    const { roleRef, user } = req.params;
+    //Can also check weather user and role exist or not
+
+    if (await UserService.checkRole(roleRef, user)) {
+        return { message: 'Yes User have access this role' };
+    }
+    return { message: 'No User have not access this role' };
+};
+
 //Permission based access
 exports.addCategory = async (req) => {
     //And user have Add permision in category module then they can access this API

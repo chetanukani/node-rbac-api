@@ -28,6 +28,10 @@ const roleSchema = new mongoose.Schema(
             unique: true,
         },
         [TableFields.permissions]: [permissionSchema],
+        [TableFields.active]: {
+            type: Boolean,
+            default: true,
+        },
     },
     {
         timestamps: true,

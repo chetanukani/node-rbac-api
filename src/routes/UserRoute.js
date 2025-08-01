@@ -18,6 +18,11 @@ const router = API.configRoute('/user')
     .useAdminAuth()
     .build()
 
+    .addPath('/update/many')
+    .asUPDATE(UserController.updateUserLastname)
+    .useAdminAuth()
+    .build()
+
     .addPath('/login')
     .asPOST(UserController.login)
     .build()

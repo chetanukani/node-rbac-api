@@ -2,6 +2,7 @@ const API = require('../utils/apiBuilder');
 const AdminController = require('../controllers/AdminController');
 const RoleController = require('../controllers/RoleController');
 const { TableFields } = require('../utils/constants');
+const UserController = require('../controllers/UserController');
 
 const router = API.configRoute('/admin')
     .addPath('/signup')
@@ -35,6 +36,21 @@ const router = API.configRoute('/admin')
 
     .addPath(`/role/details/:${TableFields.ID}`)
     .asGET(RoleController.getRoleDetails)
+    .useAdminAuth()
+    .build()
+
+    .addPath(`/role/status/:${TableFields.ID}`)
+    .asUPDATE(RoleController.updateActivationStatus)
+    .useAdminAuth()
+    .build()
+
+    .addPath(`/role/delete/:${TableFields.ID}`)
+    .asDELETE(RoleController.deleteRole)
+    .useAdminAuth()
+    .build()
+
+    .addPath(`/role/check/:${TableFields.roleRef}/:${TableFields.user}`)
+    .asGET(UserController.checkRole)
     .useAdminAuth()
     .build()
 

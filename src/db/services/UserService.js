@@ -170,6 +170,38 @@ class UserService {
             }
         );
     };
+
+    static checkRole = async (roleRef, userId) => {
+        return await User.exists({
+            [TableFields.ID]: MongoUtil.toObjectId(userId),
+            [TableFields.roleRef]: MongoUtil.toObjectId(roleRef),
+        });
+    };
+
+    static checkRoleAssigned = async (roleRef) => {
+        return await User.exists({
+            [TableFields.roleRef]: MongoUtil.toObjectId(roleRef),
+        });
+    };
+
+    static updateManyUsersDetails = async (records = []) => {
+        let bulkWriteQry = [];
+        records.forEach((a) => {
+            bulkWriteQry.push({
+                updateOne: {
+                    filter: {
+                        [TableFields.ID]: MongoUtil.toObjectId(
+                            a[TableFields.ID]
+                        ),
+                    },
+                    update: {
+                        [TableFields.lastName]: a[TableFields.lastName],
+                    },
+                },
+            });
+        });
+        await User.bulkWrite(bulkWriteQry);
+    };
 }
 
 const ProjectionBuilder = class {

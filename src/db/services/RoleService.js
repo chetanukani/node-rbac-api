@@ -33,8 +33,8 @@ class RoleService {
         return new ProjectionBuilder(async function () {
             const limit = filter.limit || 0;
             const skip = filter.skip || 0;
-            const sortKey = filter.sortKey || TableFields.name_;
-            const sortOrder = filter.sortOrder || 1;
+            const sortKey = filter.sortKey || TableFields.createdAt;
+            const sortOrder = filter.sortOrder || -1;
             const needCount = Util.parseBoolean(filter.needCount);
 
             const serachQry = {};
@@ -54,6 +54,16 @@ class RoleService {
             [TableFields.permissions]: updatedDetails[TableFields.permissions],
         });
     };
+
+    static statusChange = async (recordId, active = false) => {
+        await Role.findByIdAndUpdate(MongoUtil.toObjectId(recordId), {
+            [TableFields.active]: active,
+        });
+    };
+
+    static deleteRole = async (recordId) => {
+        await Role.findByIdAndDelete(MongoUtil.toObjectId(recordId));
+    };
 }
 
 const ProjectionBuilder = class {
@@ -69,6 +79,13 @@ const ProjectionBuilder = class {
         this.withBasicInfo = () => {
             projection[TableFields.name_] = 1;
             projection[TableFields.permissions] = 1;
+            projection[TableFields.active] = 1;
+            return this;
+        };
+
+        this.withTimestamp = () => {
+            projection[TableFields.createdAt] = 1;
+            projection[TableFields.updatedAt] = 1;
             return this;
         };
 
